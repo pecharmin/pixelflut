@@ -10,15 +10,15 @@
 import socket
 from time import sleep
 
-p = ('192.168.11.54', 1234)
+p = ('192.168.11.171', 1234)
 h = 1280
 w = 1920
-j = 9
+j = 3
 
 snake = []
 for i in range(int(w/2), int(w/2)+25*j, j):
-    snake.append([i, int(h/2)+200])
-c = '000000'
+    snake.append([i, int(h/2)-400])
+c = 'ffaaff'
 # d:
 # 0: oben - y+j
 # 1: rechts - x+j
@@ -41,14 +41,22 @@ def sendsnake():
                 data += "PX %i %i %s\n" % (bx+bxi, by+byi, c)
     s.sendall(bytes(data, 'ascii'))
 
-def nextpixel(x, y):
+def nextpixel(d, x, y):
     if d == 0:
+        if y-j < 0:
+            return nextpixel(3, x, y)
         return (x, y+j)
     if d == 1:
+        if x+j > w:
+            return nextpixel(0, x, y)
         return (x+j, y)
     if d == 2:
+        if y+j > h:
+            return nextpixel(1, x, y)
         return (x, y-j)
     if d == 3:
+        if x-j < 0:
+            return nextpixel(2, x, y)
         return (x-j, y)
 
 i = 0
@@ -59,7 +67,7 @@ while True:
     if i > 1000:
         i=0
         # was ist die Farbe des nächsten Pixels?
-        s.send(bytes("PX %i %i\n" % nextpixel(snake[-1][0], snake[-1][1]), 'ascii'))
+        s.send(bytes("PX %i %i\n" % nextpixel(d, snake[-1][0], snake[-1][1]), 'ascii'))
         np = s.recv(64).split()
         nx = int(np[1])
         ny = int(np[2])
