@@ -16,11 +16,11 @@ from time import sleep
 p = ('192.168.11.171', 1234)
 h = 1280
 w = 1920
-j = 3
+j = 9
 
 snake = []
-for i in range(int(w/2), int(w/2)+25*j, j):
-    snake.append([i, int(h/2)-400])
+for i in range(int(w/2), int(w/2)+15*j, j):
+    snake.append([i, int(h/2)])
 c = 'ffaaff'
 # d:
 # 0: oben - y+j
@@ -47,18 +47,22 @@ def sendsnake():
 def nextpixel(d, x, y):
     if d == 0:
         if y-j < 0:
+            print('moving left')
             return nextpixel(3, x, y)
         return (x, y+j)
     if d == 1:
         if x+j > w:
+            print('moving up')
             return nextpixel(0, x, y)
         return (x+j, y)
     if d == 2:
         if y+j > h:
+            print('moving right')
             return nextpixel(1, x, y)
         return (x, y-j)
     if d == 3:
         if x-j < 0:
+            print('moving down')
             return nextpixel(2, x, y)
         return (x-j, y)
 
@@ -74,6 +78,7 @@ while True:
         np = s.recv(64).split()
         nx = int(np[1])
         ny = int(np[2])
+        print("next pixel: %i %i" % (nx, ny))
         # n = next color
         n = int("0x%s" % np[3].decode('ascii'), 16)
         # Berechne die nächste RichtungPX %i %i %s\nPX %i %i %s\n
