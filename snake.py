@@ -2,8 +2,11 @@
 #coding: utf8
 
 # TODO
-# * Snake im Rahmen halten
+# * Ausbruch der Snake in Ecken verhindern
 # * Farben ausscheiden (Array analog zu snake[])
+# * im Terminal anzeigen wo die Snake gerade ist (z.B. per ncurses)
+# * Threading / async pixel fetch
+# * Performance-Optimierungen
 
 # PX <hor> <ver>
 
