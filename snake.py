@@ -8,28 +8,43 @@
 # * Threading / async pixel fetch
 # * Performance-Optimierungen
 
-# PX <hor> <ver>
+# Protokollformat: PX <X> <Y> <color>
 
-import socket
+from socket import socket, AF_INET, SOCK_STREAM
 from time import sleep
 
+# Pixelflut Destination Server
 p = ('192.168.11.171', 1234)
+# Height und Width des Pixel-Servers
 h = 1280
 w = 1920
+# Blockgröße eines Body-Teils der Snake in Pixel, kann nur 1+2*X sein
 j = 9
-
-snake = []
-for i in range(int(w/2), int(w/2)+15*j, j):
-    snake.append([i, int(h/2)])
+# Länge der Snake in Blöcken
+l = 15
+# Farbe der Snake
 c = 'ffaaff'
-# d:
-# 0: oben - y+j
+
+# Erzeuge Blöcke für Snake Body
+# Format: [[<X block 1>, <Y block 1>], [<X block 2>, <Y block 2>], ...]
+# snake[-1] ist der Kopf der Snake
+snake = []
+for i in range(int(w/2), int(w/2)+l*j, j):
+    snake.append([i, int(h/2)])
+
+# Snake frisst Pixel und scheidet sie später wieder aus, diese werden hier gespeichert
+dp = []
+for i in range(0, len(snake)):
+    dp.append('empty')
+
+# Direction in welche die Snake gerade unterwegs ist?
+# 0: oben   - y+j
 # 1: rechts - x+j
-# 2: unten - y-j
-# 3: links - x-j
+# 2: unten  - y-j
+# 3: links  - x-j
 d = 1
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket(AF_INET, SOCK_STREAM)
 s.connect(p)
 
 def sendsnake():
