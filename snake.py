@@ -74,21 +74,33 @@ def sendsnake():
 def nextpixel(d, x, y):
     if d == 0:
         if y-j < 0:
+            if x-j < 0:
+                print('corner, moving right')
+                return nextpixel(1, x, y)
             print('moving left')
             return nextpixel(3, x, y)
         return (x, y+j)
     if d == 1:
         if x+j > w:
+            if y-j < 0:
+                print('corner, moving down')
+                return nextpixel(2, x, y)
             print('moving up')
             return nextpixel(0, x, y)
         return (x+j, y)
     if d == 2:
         if y+j > h:
+            if y+j > w:
+                print('corner, moving left')
+                return nextpixel(3, x, y)
             print('moving right')
             return nextpixel(1, x, y)
         return (x, y-j)
     if d == 3:
         if x-j < 0:
+            if y+j > h:
+                print('corner, moving up')
+                return nextpixel(0, x, y)
             print('moving down')
             return nextpixel(2, x, y)
         return (x-j, y)
