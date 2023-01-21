@@ -5,28 +5,37 @@
 # Die Snake frisst die Pixel auf ihrem Weg und scheidet sie später wieder aus.
 
 # TODO
-# * Ausbruch der Snake in Ecken verhindern
 # * Threading / async pixel fetch
 # * Performance-Optimierungen
 # * Parameter per CLI übergeben
 # * Rahmen definieren in dem sich die Snake bewegen darf (x-y-offset, x-y-width)
+# * Optionen: Snake mit jedem Schritt länger werden lassen und automatisch neustarten,
+#   wenn sie sich selber fressen würde.
 
 # Pixelflut Protokollformat: PX <X> <Y> <color>
 
 from socket import socket, AF_INET, SOCK_STREAM
 from time import sleep
+from random import randint
 
+### BEGIN settings
 # Pixelflut Destination Server
 p = ('192.168.11.171', 1234)
 # Height und Width des Pixel-Servers
 h = 1280
 w = 1920
-# Blockgröße eines Body-Teils der Snake in Pixel, kann nur 1+2*X sein
-j = 9
-# Länge der Snake in Blöcken
+# Skalierung der Snake in Pixeln (1+2*sc)
+sc = 3
+# Länge der Snake in Blöcken (Block = 1 + sc * 2 Pixel)
 l = 15
 # Farbe der Snake
 c = 'ffaaff'
+# Anzahl der Print-Operationen (sendsnake) nach denen sich die Snake um einen Step/Block bewegt.
+it = 5000
+### EMD settings
+
+# Blockgröße eines Body-Teils der Snake in Pixel
+j = 1 + sc * 2
 
 # Erzeuge Blöcke für Snake Body
 # Format: [[<X block 1>, <Y block 1>], [<X block 2>, <Y block 2>], ...]
@@ -40,12 +49,13 @@ dp = []
 for i in range(0, len(snake)):
     dp.append('empty')
 
-# Direction in welche die Snake gerade unterwegs ist?
+# d = Direction in welche die Snake gerade unterwegs ist
 # 0: oben   - y+j
 # 1: rechts - x+j
 # 2: unten  - y-j
 # 3: links  - x-j
-d = 1
+# Beim Start wird eine zufällige Richtung ausgewählt.
+d = randint(0, 3)
 # Seichere die letzte Bewegunsrichtung, damit sich die Snake jeweils nur
 # rechts, links und geradeaus fortbewegen kann.
 ld = d
@@ -107,7 +117,7 @@ def nextpixel(d, x, y):
 
 r=0
 while True:
-    if r > 100000000:
+    if r > 10000000000:
         r=0
     r=r+1
 
@@ -115,7 +125,7 @@ while True:
     sendsnake()
 
     # Bewege die Snake regelmäßig weiter
-    if r % 1000 == 0:
+    if r % it == 0:
         # Was ist der Inhalt des nächsten Pixels auf dem Weg der Snake?
         s.send(bytes("PX %i %i\n" % nextpixel(d, snake[-1][0], snake[-1][1]), 'ascii'))
         np = s.recv(64).split()
